@@ -10,33 +10,123 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedAnalyticsAuditRouteImport } from './routes/_authenticated/analytics.audit'
+import { Route as AuthenticatedDashboardAdminRouteImport } from './routes/_authenticated/dashboard.admin'
+import { Route as AuthenticatedGateTerminalRouteImport } from './routes/_authenticated/gate.terminal'
+import { Route as AuthenticatedKioskSelfCheckinRouteImport } from './routes/_authenticated/kiosk.self-checkin'
+import { Route as AuthenticatedPortalResidentRouteImport } from './routes/_authenticated/portal.resident'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAnalyticsAuditRoute =
+  AuthenticatedAnalyticsAuditRouteImport.update({
+    id: '/analytics/audit',
+    path: '/analytics/audit',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDashboardAdminRoute =
+  AuthenticatedDashboardAdminRouteImport.update({
+    id: '/dashboard/admin',
+    path: '/dashboard/admin',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedGateTerminalRoute =
+  AuthenticatedGateTerminalRouteImport.update({
+    id: '/gate/terminal',
+    path: '/gate/terminal',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedKioskSelfCheckinRoute =
+  AuthenticatedKioskSelfCheckinRouteImport.update({
+    id: '/kiosk/self-checkin',
+    path: '/kiosk/self-checkin',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalResidentRoute =
+  AuthenticatedPortalResidentRouteImport.update({
+    id: '/portal/resident',
+    path: '/portal/resident',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/analytics/audit': typeof AuthenticatedAnalyticsAuditRoute
+  '/dashboard/admin': typeof AuthenticatedDashboardAdminRoute
+  '/gate/terminal': typeof AuthenticatedGateTerminalRoute
+  '/kiosk/self-checkin': typeof AuthenticatedKioskSelfCheckinRoute
+  '/portal/resident': typeof AuthenticatedPortalResidentRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/analytics/audit': typeof AuthenticatedAnalyticsAuditRoute
+  '/dashboard/admin': typeof AuthenticatedDashboardAdminRoute
+  '/gate/terminal': typeof AuthenticatedGateTerminalRoute
+  '/kiosk/self-checkin': typeof AuthenticatedKioskSelfCheckinRoute
+  '/portal/resident': typeof AuthenticatedPortalResidentRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/analytics/audit': typeof AuthenticatedAnalyticsAuditRoute
+  '/_authenticated/dashboard/admin': typeof AuthenticatedDashboardAdminRoute
+  '/_authenticated/gate/terminal': typeof AuthenticatedGateTerminalRoute
+  '/_authenticated/kiosk/self-checkin': typeof AuthenticatedKioskSelfCheckinRoute
+  '/_authenticated/portal/resident': typeof AuthenticatedPortalResidentRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/analytics/audit'
+    | '/dashboard/admin'
+    | '/gate/terminal'
+    | '/kiosk/self-checkin'
+    | '/portal/resident'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/analytics/audit'
+    | '/dashboard/admin'
+    | '/gate/terminal'
+    | '/kiosk/self-checkin'
+    | '/portal/resident'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/analytics/audit'
+    | '/_authenticated/dashboard/admin'
+    | '/_authenticated/gate/terminal'
+    | '/_authenticated/kiosk/self-checkin'
+    | '/_authenticated/portal/resident'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +138,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/analytics/audit': {
+      id: '/_authenticated/analytics/audit'
+      path: '/analytics/audit'
+      fullPath: '/analytics/audit'
+      preLoaderRoute: typeof AuthenticatedAnalyticsAuditRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard/admin': {
+      id: '/_authenticated/dashboard/admin'
+      path: '/dashboard/admin'
+      fullPath: '/dashboard/admin'
+      preLoaderRoute: typeof AuthenticatedDashboardAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/gate/terminal': {
+      id: '/_authenticated/gate/terminal'
+      path: '/gate/terminal'
+      fullPath: '/gate/terminal'
+      preLoaderRoute: typeof AuthenticatedGateTerminalRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/kiosk/self-checkin': {
+      id: '/_authenticated/kiosk/self-checkin'
+      path: '/kiosk/self-checkin'
+      fullPath: '/kiosk/self-checkin'
+      preLoaderRoute: typeof AuthenticatedKioskSelfCheckinRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/resident': {
+      id: '/_authenticated/portal/resident'
+      path: '/portal/resident'
+      fullPath: '/portal/resident'
+      preLoaderRoute: typeof AuthenticatedPortalResidentRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAnalyticsAuditRoute: typeof AuthenticatedAnalyticsAuditRoute
+  AuthenticatedDashboardAdminRoute: typeof AuthenticatedDashboardAdminRoute
+  AuthenticatedGateTerminalRoute: typeof AuthenticatedGateTerminalRoute
+  AuthenticatedKioskSelfCheckinRoute: typeof AuthenticatedKioskSelfCheckinRoute
+  AuthenticatedPortalResidentRoute: typeof AuthenticatedPortalResidentRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAnalyticsAuditRoute: AuthenticatedAnalyticsAuditRoute,
+  AuthenticatedDashboardAdminRoute: AuthenticatedDashboardAdminRoute,
+  AuthenticatedGateTerminalRoute: AuthenticatedGateTerminalRoute,
+  AuthenticatedKioskSelfCheckinRoute: AuthenticatedKioskSelfCheckinRoute,
+  AuthenticatedPortalResidentRoute: AuthenticatedPortalResidentRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
