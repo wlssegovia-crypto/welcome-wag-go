@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedGateTerminalRouteImport } from './routes/_authenticated/gate.terminal'
+import { Route as AuthenticatedKioskSelfCheckinRouteImport } from './routes/_authenticated/kiosk.self-checkin'
 import { Route as AuthenticatedPortalResidentRouteImport } from './routes/_authenticated/portal.resident'
 
 const IndexRoute = IndexRouteImport.update({
@@ -35,6 +36,12 @@ const AuthenticatedGateTerminalRoute =
     path: '/gate/terminal',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedKioskSelfCheckinRoute =
+  AuthenticatedKioskSelfCheckinRouteImport.update({
+    id: '/kiosk/self-checkin',
+    path: '/kiosk/self-checkin',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPortalResidentRoute =
   AuthenticatedPortalResidentRouteImport.update({
     id: '/portal/resident',
@@ -46,12 +53,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/gate/terminal': typeof AuthenticatedGateTerminalRoute
+  '/kiosk/self-checkin': typeof AuthenticatedKioskSelfCheckinRoute
   '/portal/resident': typeof AuthenticatedPortalResidentRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/gate/terminal': typeof AuthenticatedGateTerminalRoute
+  '/kiosk/self-checkin': typeof AuthenticatedKioskSelfCheckinRoute
   '/portal/resident': typeof AuthenticatedPortalResidentRoute
 }
 export interface FileRoutesById {
@@ -60,19 +69,31 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/gate/terminal': typeof AuthenticatedGateTerminalRoute
+  '/_authenticated/kiosk/self-checkin': typeof AuthenticatedKioskSelfCheckinRoute
   '/_authenticated/portal/resident': typeof AuthenticatedPortalResidentRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/gate/terminal' | '/portal/resident'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/gate/terminal'
+    | '/kiosk/self-checkin'
+    | '/portal/resident'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/gate/terminal' | '/portal/resident'
+  to:
+    | '/'
+    | '/auth'
+    | '/gate/terminal'
+    | '/kiosk/self-checkin'
+    | '/portal/resident'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/gate/terminal'
+    | '/_authenticated/kiosk/self-checkin'
     | '/_authenticated/portal/resident'
   fileRoutesById: FileRoutesById
 }
@@ -112,6 +133,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGateTerminalRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/kiosk/self-checkin': {
+      id: '/_authenticated/kiosk/self-checkin'
+      path: '/kiosk/self-checkin'
+      fullPath: '/kiosk/self-checkin'
+      preLoaderRoute: typeof AuthenticatedKioskSelfCheckinRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/portal/resident': {
       id: '/_authenticated/portal/resident'
       path: '/portal/resident'
@@ -124,11 +152,13 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedGateTerminalRoute: typeof AuthenticatedGateTerminalRoute
+  AuthenticatedKioskSelfCheckinRoute: typeof AuthenticatedKioskSelfCheckinRoute
   AuthenticatedPortalResidentRoute: typeof AuthenticatedPortalResidentRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedGateTerminalRoute: AuthenticatedGateTerminalRoute,
+  AuthenticatedKioskSelfCheckinRoute: AuthenticatedKioskSelfCheckinRoute,
   AuthenticatedPortalResidentRoute: AuthenticatedPortalResidentRoute,
 }
 
