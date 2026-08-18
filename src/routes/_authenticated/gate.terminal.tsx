@@ -452,15 +452,17 @@ function WalkInDialog({
 
   async function runFaceCheck() {
     const host = hosts.data?.find((h) => h.id === hostId);
-    if (!photo || !host?.photo_url) {
-      toast.error("Need a live capture and a registered profile photo");
+    // Prefer the portrait on the captured physical ID; fall back to the registered profile photo.
+    const reference = idPhoto ?? host?.photo_url ?? null;
+    if (!photo || !reference) {
+      toast.error("Need a live capture plus an ID photo or a registered profile photo");
       return;
     }
     setBusy(true);
     try {
-      const result = await verifyFace({ data: { live: photo, reference: host.photo_url } });
+      const result = await verifyFace({ data: { live: photo, reference } });
       toast[result.match ? "success" : "warning"](
-        `${result.match ? "Face match" : "No match"} · ${Math.round(result.confidence * 100)}%`,
+        `${result.match ? "Face match" : "No match"} vs ${idPhoto ? "ID portrait" : "profile photo"} · ${Math.round(result.confidence * 100)}%`,
       );
     } catch {
       toast.error("Face verification failed");
@@ -468,6 +470,7 @@ function WalkInDialog({
       setBusy(false);
     }
   }
+
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();

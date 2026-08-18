@@ -277,8 +277,10 @@ export type Database = {
           email: string | null
           full_name: string
           id: string
+          id_photo_url: string | null
           phone: string | null
           photo_url: string | null
+          position: string | null
           property_id: string | null
           unit_id: string | null
         }
@@ -288,8 +290,10 @@ export type Database = {
           email?: string | null
           full_name?: string
           id: string
+          id_photo_url?: string | null
           phone?: string | null
           photo_url?: string | null
+          position?: string | null
           property_id?: string | null
           unit_id?: string | null
         }
@@ -299,8 +303,10 @@ export type Database = {
           email?: string | null
           full_name?: string
           id?: string
+          id_photo_url?: string | null
           phone?: string | null
           photo_url?: string | null
+          position?: string | null
           property_id?: string | null
           unit_id?: string | null
         }
@@ -497,7 +503,13 @@ export type Database = {
         | "security_guard"
         | "host_resident"
         | "visitor"
-      category_type: "RESIDENT" | "EMPLOYEE" | "WORKER" | "GUEST" | "TRANSIENT"
+      category_type:
+        | "RESIDENT"
+        | "EMPLOYEE"
+        | "WORKER"
+        | "GUEST"
+        | "TRANSIENT"
+        | "STAFF"
       property_type:
         | "RESIDENTIAL_CONDO"
         | "SUBDIVISION"
@@ -509,6 +521,10 @@ export type Database = {
         | "RESORT_HOTEL"
         | "SPORTS_CLUB"
         | "OTHER"
+        | "MIXED_USE"
+        | "DORMITORY"
+        | "WAREHOUSE"
+        | "EMBASSY"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -644,7 +660,14 @@ export const Constants = {
         "host_resident",
         "visitor",
       ],
-      category_type: ["RESIDENT", "EMPLOYEE", "WORKER", "GUEST", "TRANSIENT"],
+      category_type: [
+        "RESIDENT",
+        "EMPLOYEE",
+        "WORKER",
+        "GUEST",
+        "TRANSIENT",
+        "STAFF",
+      ],
       property_type: [
         "RESIDENTIAL_CONDO",
         "SUBDIVISION",
@@ -656,6 +679,10 @@ export const Constants = {
         "RESORT_HOTEL",
         "SPORTS_CLUB",
         "OTHER",
+        "MIXED_USE",
+        "DORMITORY",
+        "WAREHOUSE",
+        "EMBASSY",
       ],
     },
   },

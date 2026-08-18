@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Building2, Layers, Plus, Users } from "lucide-react";
+import { Building2, IdCard, Layers, Plus, Users } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/hooks/use-vras";
@@ -21,11 +21,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  CATEGORIES,
+  CATEGORY_LABELS,
   PROPERTY_TYPES,
   PROPERTY_TYPE_LABELS,
   ROLES,
   ROLE_LABELS,
+  formatDateTime,
   maskEmail,
+  randomCode,
+  type Category,
   type PropertyType,
   type Role,
 } from "@/lib/vras";
@@ -88,20 +93,25 @@ function AdminDashboard() {
     },
   });
 
+  const isSuper = me?.roles?.includes("super_admin") ?? false;
+
   const people = useQuery({
     queryKey: ["people", propertyId],
     enabled: !!propertyId,
     queryFn: async () => {
-      const [{ data: profiles }, { data: roles }] = await Promise.all([
+      const [{ data: profiles }, { data: roles }, { data: creds }] = await Promise.all([
         supabase.from("profiles").select("*").eq("property_id", propertyId!).order("full_name"),
         supabase.from("user_roles").select("user_id, role"),
+        supabase.from("qr_credentials").select("user_id, valid_until, is_active"),
       ]);
       return (profiles ?? []).map((p) => ({
         ...p,
         role: (roles ?? []).find((r) => r.user_id === p.id)?.role as Role | undefined,
+        credential: (creds ?? []).find((c) => c.user_id === p.id) ?? null,
       }));
     },
   });
+
 
   async function saveProperty(e: React.FormEvent) {
     e.preventDefault();
@@ -234,51 +244,27 @@ function AdminDashboard() {
 
           <section className="panel p-5">
             <h2 className="flex items-center gap-2 text-lg font-semibold">
-              <Users className="size-4 text-primary" /> People &amp; roles
+              <Users className="size-4 text-primary" /> People, roles &amp; QR IDs
             </h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Assign roles, set a position/title and issue a digital QR ID with an expiry date.
+              {isSuper ? " As super admin you can also designate other super admins." : ""}
+            </p>
             <div className="mt-3 space-y-2">
               {people.data?.map((p) => (
-                <div
+                <PersonRow
                   key={p.id}
-                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border p-3 text-sm"
-                >
-                  <div>
-                    <p className="font-medium">{p.full_name || "Unnamed"}</p>
-                    <p className="text-xs text-muted-foreground">{maskEmail(p.email)}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {p.role && <Badge variant="outline">{ROLE_LABELS[p.role]}</Badge>}
-                    <Select
-                      value={p.role ?? ""}
-                      onValueChange={async (role) => {
-                        try {
-                          await setUserRole({ data: { userId: p.id, role } });
-                          toast.success("Role updated");
-                          void people.refetch();
-                        } catch (err) {
-                          toast.error(err instanceof Error ? err.message : "Could not update role");
-                        }
-                      }}
-                    >
-                      <SelectTrigger className="w-44">
-                        <SelectValue placeholder="Assign role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {ROLES.filter((r) => r !== "super_admin").map((r) => (
-                          <SelectItem key={r} value={r}>
-                            {ROLE_LABELS[r]}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+                  person={p}
+                  canGrantSuper={isSuper}
+                  onChange={() => void people.refetch()}
+                />
               ))}
               {!people.data?.length && (
                 <p className="text-sm text-muted-foreground">No people registered yet.</p>
               )}
             </div>
           </section>
+
         </div>
       </div>
     </AppShell>
@@ -388,5 +374,125 @@ function ZoneManager({
         )}
       </div>
     </section>
+  );
+}
+
+type PersonRowProps = {
+  person: {
+    id: string;
+    full_name: string;
+    email: string | null;
+    position: string | null;
+    category: string;
+    role?: Role | undefined;
+    credential: { valid_until: string | null; is_active: boolean } | null;
+  };
+  canGrantSuper: boolean;
+  onChange: () => void;
+};
+
+function PersonRow({ person, canGrantSuper, onChange }: PersonRowProps) {
+  const [position, setPosition] = useState(person.position ?? "");
+  const [expiry, setExpiry] = useState(person.credential?.valid_until?.slice(0, 10) ?? "");
+  const [category, setCategory] = useState<Category>(person.category as Category);
+  const [busy, setBusy] = useState(false);
+
+  async function issueId() {
+    setBusy(true);
+    try {
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({ position: position.trim().slice(0, 80) || null, category })
+        .eq("id", person.id);
+      if (profileError) throw new Error(profileError.message);
+
+      const { error: credError } = await supabase.from("qr_credentials").upsert(
+        {
+          user_id: person.id,
+          qr_token: `VRAS-${randomCode("", 20)}`,
+          valid_until: expiry ? new Date(`${expiry}T23:59:59`).toISOString() : null,
+          is_active: true,
+        },
+        { onConflict: "user_id" },
+      );
+      if (credError) throw new Error(credError.message);
+      toast.success("QR ID issued");
+      onChange();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not issue the QR ID");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="space-y-2 rounded-lg border border-border p-3 text-sm">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <p className="font-medium">{person.full_name || "Unnamed"}</p>
+          <p className="text-xs text-muted-foreground">{maskEmail(person.email)}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          {person.role && <Badge variant="outline">{ROLE_LABELS[person.role]}</Badge>}
+          <Select
+            value={person.role ?? ""}
+            onValueChange={async (role) => {
+              try {
+                await setUserRole({ data: { userId: person.id, role } });
+                toast.success("Role updated");
+                onChange();
+              } catch (err) {
+                toast.error(err instanceof Error ? err.message : "Could not update role");
+              }
+            }}
+          >
+            <SelectTrigger className="w-44">
+              <SelectValue placeholder="Assign role" />
+            </SelectTrigger>
+            <SelectContent>
+              {ROLES.filter((r) => r !== "super_admin" || canGrantSuper).map((r) => (
+                <SelectItem key={r} value={r}>
+                  {ROLE_LABELS[r]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="grid gap-2 sm:grid-cols-4">
+        <Input
+          className="sm:col-span-1"
+          placeholder="Position / title"
+          maxLength={80}
+          value={position}
+          onChange={(e) => setPosition(e.target.value)}
+        />
+        <Select value={category} onValueChange={(v) => setCategory(v as Category)}>
+          <SelectTrigger>
+            <SelectValue placeholder="Category" />
+          </SelectTrigger>
+          <SelectContent>
+            {CATEGORIES.map((c) => (
+              <SelectItem key={c} value={c}>
+                {CATEGORY_LABELS[c]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Input type="date" value={expiry} onChange={(e) => setExpiry(e.target.value)} />
+        <Button type="button" variant="secondary" disabled={busy} onClick={issueId}>
+          <IdCard className="size-4" /> Issue QR ID
+        </Button>
+      </div>
+      {person.credential && (
+        <p className="text-xs text-muted-foreground">
+          Current pass {person.credential.is_active ? "active" : "revoked"} ·{" "}
+          {person.credential.valid_until
+            ? `expires ${formatDateTime(person.credential.valid_until)}`
+            : "no expiry"}
+        </p>
+      )}
+    </div>
   );
 }

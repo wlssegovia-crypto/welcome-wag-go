@@ -153,7 +153,14 @@ function ResidentPortal() {
             <QrPass
               token={me.credential.qr_token}
               name={me.profile?.full_name || me.email || "Resident"}
-              subtitle={`${CATEGORY_LABELS[(me.profile?.category ?? "RESIDENT") as keyof typeof CATEGORY_LABELS]} · ${me.property?.name ?? "Property"}`}
+              subtitle={[
+                me.profile?.position,
+                CATEGORY_LABELS[(me.profile?.category ?? "RESIDENT") as keyof typeof CATEGORY_LABELS],
+                me.property?.name,
+              ]
+                .filter(Boolean)
+                .join(" · ")}
+
               validUntil={me.credential.valid_until}
             />
           ) : (

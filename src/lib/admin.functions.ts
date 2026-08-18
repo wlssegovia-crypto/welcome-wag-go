@@ -14,6 +14,16 @@ export const setUserRole = createServerFn({ method: "POST" })
     const { data: isAdmin } = await context.supabase.rpc("is_admin");
     if (!isAdmin) throw new Error("Forbidden");
 
+    if (data.role === "super_admin") {
+      const { data: isSuper } = await context.supabase.rpc("has_role", {
+        _user_id: context.userId,
+        _role: "super_admin",
+      });
+      if (!isSuper) throw new Error("Only a super admin can designate another super admin");
+    }
+
+
+
     const { data: caller } = await context.supabase
       .from("profiles")
       .select("property_id")
