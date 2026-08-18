@@ -88,20 +88,25 @@ function AdminDashboard() {
     },
   });
 
+  const isSuper = me?.roles?.includes("super_admin") ?? false;
+
   const people = useQuery({
     queryKey: ["people", propertyId],
     enabled: !!propertyId,
     queryFn: async () => {
-      const [{ data: profiles }, { data: roles }] = await Promise.all([
+      const [{ data: profiles }, { data: roles }, { data: creds }] = await Promise.all([
         supabase.from("profiles").select("*").eq("property_id", propertyId!).order("full_name"),
         supabase.from("user_roles").select("user_id, role"),
+        supabase.from("qr_credentials").select("user_id, valid_until, is_active"),
       ]);
       return (profiles ?? []).map((p) => ({
         ...p,
         role: (roles ?? []).find((r) => r.user_id === p.id)?.role as Role | undefined,
+        credential: (creds ?? []).find((c) => c.user_id === p.id) ?? null,
       }));
     },
   });
+
 
   async function saveProperty(e: React.FormEvent) {
     e.preventDefault();
