@@ -9,13 +9,15 @@ import { Badge } from "@/components/ui/badge";
 import { OfflineIndicator } from "@/components/vras/OfflineIndicator";
 import { ROLE_LABELS } from "@/lib/vras";
 
-const NAV = [
+type NavItem = { to: string; label: string; staffOnly: boolean; adminOnly?: boolean };
+
+const NAV: NavItem[] = [
   { to: "/dashboard/admin", label: "Admin", staffOnly: true, adminOnly: true },
   { to: "/gate/terminal", label: "Gate terminal", staffOnly: true },
   { to: "/kiosk/self-checkin", label: "Kiosk", staffOnly: false },
   { to: "/portal/resident", label: "My portal", staffOnly: false },
   { to: "/analytics/audit", label: "Audit", staffOnly: true },
-] as const;
+];
 
 export function AppShell({ children, title }: { children: ReactNode; title: string }) {
   const { data: me } = useMe();
