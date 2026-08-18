@@ -100,5 +100,6 @@ export async function flushQueue(): Promise<number> {
     else synced++;
   }
   await writeQueue(remaining);
+  if (synced > 0) await set(LAST_SYNC_KEY, new Date().toISOString());
   return synced;
 }
