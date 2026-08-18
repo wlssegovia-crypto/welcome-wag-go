@@ -1,16 +1,27 @@
-export const CATEGORIES = ["RESIDENT", "EMPLOYEE", "WORKER", "GUEST", "TRANSIENT"] as const;
+export const CATEGORIES = [
+  "RESIDENT",
+  "EMPLOYEE",
+  "STAFF",
+  "WORKER",
+  "GUEST",
+  "TRANSIENT",
+] as const;
 export type Category = (typeof CATEGORIES)[number];
 
 export const PROPERTY_TYPES = [
   "RESIDENTIAL_CONDO",
   "SUBDIVISION",
+  "MIXED_USE",
   "OFFICE_TOWER",
   "MALL",
   "HOSPITAL",
   "SCHOOL",
+  "DORMITORY",
   "FACTORY",
+  "WAREHOUSE",
   "RESORT_HOTEL",
   "SPORTS_CLUB",
+  "EMBASSY",
   "OTHER",
 ] as const;
 export type PropertyType = (typeof PROPERTY_TYPES)[number];
@@ -33,25 +44,31 @@ export const ROLE_LABELS: Record<Role, string> = {
 };
 
 export const CATEGORY_LABELS: Record<Category, string> = {
-  RESIDENT: "Resident",
+  RESIDENT: "Long-term resident / occupant",
   EMPLOYEE: "Employee",
-  WORKER: "Contractor",
-  GUEST: "Pre-approved guest",
-  TRANSIENT: "Walk-in / delivery",
+  STAFF: "Staff",
+  WORKER: "Contractor / worker",
+  GUEST: "Short-term transient (hotel guest, patient, boarder)",
+  TRANSIENT: "Day visitor / walk-in / delivery",
 };
 
 export const PROPERTY_TYPE_LABELS: Record<PropertyType, string> = {
-  RESIDENTIAL_CONDO: "Condominium",
+  RESIDENTIAL_CONDO: "Residential condominium",
   SUBDIVISION: "Subdivision / gated community",
-  OFFICE_TOWER: "Office tower",
+  MIXED_USE: "Mixed-use development",
+  OFFICE_TOWER: "Office building / tower",
   MALL: "Mall / retail",
-  HOSPITAL: "Hospital",
-  SCHOOL: "School / university",
-  FACTORY: "Factory / warehouse",
-  RESORT_HOTEL: "Resort / hotel",
-  SPORTS_CLUB: "Sports club",
+  HOSPITAL: "Hospital / medical centre",
+  SCHOOL: "School / university campus",
+  DORMITORY: "Dormitory / student housing",
+  FACTORY: "Factory / industrial plant",
+  WAREHOUSE: "Warehouse / logistics hub",
+  RESORT_HOTEL: "Hotel / resort",
+  SPORTS_CLUB: "Sports club / golf course",
+  EMBASSY: "Embassy / consulate",
   OTHER: "Other",
 };
+
 
 /** Mask a phone number for guard-facing logs: +63 917 555 1234 -> +63 •••• 1234 */
 export function maskPhone(phone?: string | null): string {
