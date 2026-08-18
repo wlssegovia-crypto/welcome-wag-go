@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedDashboardAdminRouteImport } from './routes/_authenticated/dashboard.admin'
 import { Route as AuthenticatedGateTerminalRouteImport } from './routes/_authenticated/gate.terminal'
 import { Route as AuthenticatedKioskSelfCheckinRouteImport } from './routes/_authenticated/kiosk.self-checkin'
 import { Route as AuthenticatedPortalResidentRouteImport } from './routes/_authenticated/portal.resident'
@@ -30,6 +31,12 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedDashboardAdminRoute =
+  AuthenticatedDashboardAdminRouteImport.update({
+    id: '/dashboard/admin',
+    path: '/dashboard/admin',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedGateTerminalRoute =
   AuthenticatedGateTerminalRouteImport.update({
     id: '/gate/terminal',
@@ -52,6 +59,7 @@ const AuthenticatedPortalResidentRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/dashboard/admin': typeof AuthenticatedDashboardAdminRoute
   '/gate/terminal': typeof AuthenticatedGateTerminalRoute
   '/kiosk/self-checkin': typeof AuthenticatedKioskSelfCheckinRoute
   '/portal/resident': typeof AuthenticatedPortalResidentRoute
@@ -59,6 +67,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/dashboard/admin': typeof AuthenticatedDashboardAdminRoute
   '/gate/terminal': typeof AuthenticatedGateTerminalRoute
   '/kiosk/self-checkin': typeof AuthenticatedKioskSelfCheckinRoute
   '/portal/resident': typeof AuthenticatedPortalResidentRoute
@@ -68,6 +77,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/dashboard/admin': typeof AuthenticatedDashboardAdminRoute
   '/_authenticated/gate/terminal': typeof AuthenticatedGateTerminalRoute
   '/_authenticated/kiosk/self-checkin': typeof AuthenticatedKioskSelfCheckinRoute
   '/_authenticated/portal/resident': typeof AuthenticatedPortalResidentRoute
@@ -77,6 +87,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/dashboard/admin'
     | '/gate/terminal'
     | '/kiosk/self-checkin'
     | '/portal/resident'
@@ -84,6 +95,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/dashboard/admin'
     | '/gate/terminal'
     | '/kiosk/self-checkin'
     | '/portal/resident'
@@ -92,6 +104,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/dashboard/admin'
     | '/_authenticated/gate/terminal'
     | '/_authenticated/kiosk/self-checkin'
     | '/_authenticated/portal/resident'
@@ -126,6 +139,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/dashboard/admin': {
+      id: '/_authenticated/dashboard/admin'
+      path: '/dashboard/admin'
+      fullPath: '/dashboard/admin'
+      preLoaderRoute: typeof AuthenticatedDashboardAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/gate/terminal': {
       id: '/_authenticated/gate/terminal'
       path: '/gate/terminal'
@@ -151,12 +171,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardAdminRoute: typeof AuthenticatedDashboardAdminRoute
   AuthenticatedGateTerminalRoute: typeof AuthenticatedGateTerminalRoute
   AuthenticatedKioskSelfCheckinRoute: typeof AuthenticatedKioskSelfCheckinRoute
   AuthenticatedPortalResidentRoute: typeof AuthenticatedPortalResidentRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardAdminRoute: AuthenticatedDashboardAdminRoute,
   AuthenticatedGateTerminalRoute: AuthenticatedGateTerminalRoute,
   AuthenticatedKioskSelfCheckinRoute: AuthenticatedKioskSelfCheckinRoute,
   AuthenticatedPortalResidentRoute: AuthenticatedPortalResidentRoute,
