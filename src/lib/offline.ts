@@ -44,6 +44,28 @@ export async function pendingCount(): Promise<number> {
   return (await readQueue()).length;
 }
 
+/** Read-only view of the retry queue for device health UIs. */
+export async function listQueue(): Promise<PendingLog[]> {
+  return readQueue();
+}
+
+/** Drop a single stuck entry from the retry queue. */
+export async function discardQueued(clientRef: string): Promise<void> {
+  const items = await readQueue();
+  await writeQueue(items.filter((i) => i.client_ref !== clientRef));
+}
+
+/** Clear the whole retry queue (destructive). */
+export async function clearQueue(): Promise<void> {
+  await writeQueue([]);
+}
+
+const LAST_SYNC_KEY = "vras.last-sync-at";
+
+export async function getLastSyncedAt(): Promise<string | null> {
+  return (await get<string>(LAST_SYNC_KEY)) ?? null;
+}
+
 export async function enqueueLog(log: PendingLog) {
   const items = await readQueue();
   items.push(log);
@@ -78,5 +100,6 @@ export async function flushQueue(): Promise<number> {
     else synced++;
   }
   await writeQueue(remaining);
+  if (synced > 0) await set(LAST_SYNC_KEY, new Date().toISOString());
   return synced;
 }

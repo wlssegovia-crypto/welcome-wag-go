@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/hooks/use-vras";
 import { AppShell } from "@/components/vras/AppShell";
 import { CameraCapture } from "@/components/vras/CameraCapture";
+import { DeviceStatusCard } from "@/components/vras/DeviceStatusCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -214,6 +215,12 @@ function Kiosk() {
           </div>
         )}
       </div>
+
+      {me?.isStaff && (
+        <div className="mx-auto mt-6 max-w-2xl">
+          <DeviceStatusCard propertyId={propertyId} kind="KIOSK" gate="Kiosk" defaultName="Lobby kiosk" />
+        </div>
+      )}
     </AppShell>
   );
 }

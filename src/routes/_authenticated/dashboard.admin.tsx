@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/hooks/use-vras";
 import { AppShell } from "@/components/vras/AppShell";
+import { DeviceHealthPanel } from "@/components/vras/DeviceHealthPanel";
 import { setUserRole } from "@/lib/admin.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -221,6 +222,8 @@ function AdminDashboard() {
         </section>
 
         <div className="space-y-6">
+          <DeviceHealthPanel propertyId={propertyId} />
+
           <ZoneManager
             propertyId={propertyId}
             zoneLabel={form.zoneLabel}

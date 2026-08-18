@@ -98,6 +98,68 @@ export type Database = {
           },
         ]
       }
+      devices: {
+        Row: {
+          app_version: string | null
+          battery_percent: number | null
+          created_at: string
+          device_key: string
+          gate: string | null
+          id: string
+          kind: string
+          last_error: string | null
+          last_seen_at: string
+          last_synced_at: string | null
+          name: string
+          online: boolean
+          property_id: string
+          queue_depth: number
+          user_agent: string | null
+        }
+        Insert: {
+          app_version?: string | null
+          battery_percent?: number | null
+          created_at?: string
+          device_key: string
+          gate?: string | null
+          id?: string
+          kind?: string
+          last_error?: string | null
+          last_seen_at?: string
+          last_synced_at?: string | null
+          name?: string
+          online?: boolean
+          property_id: string
+          queue_depth?: number
+          user_agent?: string | null
+        }
+        Update: {
+          app_version?: string | null
+          battery_percent?: number | null
+          created_at?: string
+          device_key?: string
+          gate?: string | null
+          id?: string
+          kind?: string
+          last_error?: string | null
+          last_seen_at?: string
+          last_synced_at?: string | null
+          name?: string
+          online?: boolean
+          property_id?: string
+          queue_depth?: number
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "devices_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       guest_invites: {
         Row: {
           access_code: string
