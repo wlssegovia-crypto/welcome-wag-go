@@ -215,6 +215,12 @@ function Kiosk() {
           </div>
         )}
       </div>
+
+      {me?.isStaff && (
+        <div className="mx-auto mt-6 max-w-2xl">
+          <DeviceStatusCard propertyId={propertyId} kind="KIOSK" gate="Kiosk" defaultName="Lobby kiosk" />
+        </div>
+      )}
     </AppShell>
   );
 }
