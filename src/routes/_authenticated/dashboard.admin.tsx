@@ -384,7 +384,7 @@ type PersonRowProps = {
     email: string | null;
     position: string | null;
     category: string;
-    role?: Role;
+    role?: Role | undefined;
     credential: { valid_until: string | null; is_active: boolean } | null;
   };
   canGrantSuper: boolean;
