@@ -356,6 +356,7 @@ function GateTerminal() {
           </div>
         </div>
 
+        <div className="space-y-6">
         <section className="panel p-5">
           <h2 className="text-lg font-semibold">Live gate activity</h2>
           <div className="mt-3 space-y-2">
