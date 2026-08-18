@@ -234,51 +234,27 @@ function AdminDashboard() {
 
           <section className="panel p-5">
             <h2 className="flex items-center gap-2 text-lg font-semibold">
-              <Users className="size-4 text-primary" /> People &amp; roles
+              <Users className="size-4 text-primary" /> People, roles &amp; QR IDs
             </h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Assign roles, set a position/title and issue a digital QR ID with an expiry date.
+              {isSuper ? " As super admin you can also designate other super admins." : ""}
+            </p>
             <div className="mt-3 space-y-2">
               {people.data?.map((p) => (
-                <div
+                <PersonRow
                   key={p.id}
-                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border p-3 text-sm"
-                >
-                  <div>
-                    <p className="font-medium">{p.full_name || "Unnamed"}</p>
-                    <p className="text-xs text-muted-foreground">{maskEmail(p.email)}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {p.role && <Badge variant="outline">{ROLE_LABELS[p.role]}</Badge>}
-                    <Select
-                      value={p.role ?? ""}
-                      onValueChange={async (role) => {
-                        try {
-                          await setUserRole({ data: { userId: p.id, role } });
-                          toast.success("Role updated");
-                          void people.refetch();
-                        } catch (err) {
-                          toast.error(err instanceof Error ? err.message : "Could not update role");
-                        }
-                      }}
-                    >
-                      <SelectTrigger className="w-44">
-                        <SelectValue placeholder="Assign role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {ROLES.filter((r) => r !== "super_admin").map((r) => (
-                          <SelectItem key={r} value={r}>
-                            {ROLE_LABELS[r]}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+                  person={p}
+                  canGrantSuper={isSuper}
+                  onChange={() => void people.refetch()}
+                />
               ))}
               {!people.data?.length && (
                 <p className="text-sm text-muted-foreground">No people registered yet.</p>
               )}
             </div>
           </section>
+
         </div>
       </div>
     </AppShell>
