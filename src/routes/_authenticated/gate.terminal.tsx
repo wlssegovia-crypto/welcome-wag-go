@@ -7,6 +7,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useMe } from "@/hooks/use-vras";
 import { AppShell } from "@/components/vras/AppShell";
+import { DeviceStatusCard } from "@/components/vras/DeviceStatusCard";
 import { CameraCapture } from "@/components/vras/CameraCapture";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -384,6 +385,14 @@ function GateTerminal() {
             {!feed.data?.length && <p className="text-sm text-muted-foreground">No activity yet today.</p>}
           </div>
         </section>
+        </div>
+        <div className="lg:col-start-2">
+          <DeviceStatusCard
+            propertyId={propertyId}
+            kind="GATE_TERMINAL"
+            gate={activeGate}
+            defaultName="Gate terminal"
+          />
       </div>
     </AppShell>
   );
