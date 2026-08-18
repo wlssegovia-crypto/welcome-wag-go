@@ -222,6 +222,8 @@ function AdminDashboard() {
         </section>
 
         <div className="space-y-6">
+          <DeviceHealthPanel propertyId={propertyId} />
+
           <ZoneManager
             propertyId={propertyId}
             zoneLabel={form.zoneLabel}
